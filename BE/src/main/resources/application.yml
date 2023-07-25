@@ -14,7 +14,7 @@ spring:
 server:
   port: 7777
   servlet:
-      context-path: /board
+      context-path: /api
 #  logging:
 #    level:
 #      org.hibernate.SQL: debug
