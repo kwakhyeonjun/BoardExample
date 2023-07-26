@@ -5,12 +5,15 @@ import com.nts.board.exception.BoardException;
 import com.nts.board.repository.BoardRepository;
 import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
@@ -30,22 +33,30 @@ class BoardServiceTest {
     @Mock
     BoardRepository boardRepository;
 
+    @Before
+    public void before() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    private Long id;
+    private String title;
+    private String content;
+    private String writer;
+    private String password;
+    private String hashtag;
+
+    @BeforeEach
+    void setup() {
+        title = "제목";
+        content = "내용";
+        writer = "작성자";
+        password = "password";
+        hashtag = "해시,태그";
+    }
+
     @Nested
     @DisplayName("게시물 생성")
     class CreateBoard {
-        private String title;
-        private String content;
-        private String writer;
-        private String password;
-
-        @BeforeEach
-        void setup() {
-            title = "제목";
-            content = "내용";
-            writer = "작성자";
-            password = "password";
-        }
-
         @Nested
         @DisplayName("정상 케이스")
         class SuccessCase {
@@ -58,6 +69,7 @@ class BoardServiceTest {
                         .content(content)
                         .writer(writer)
                         .password(password)
+                        .hashtag(hashtag)
                         .build();
                 when(boardRepository.save(any(Board.class))).thenReturn(board);
 
@@ -66,6 +78,10 @@ class BoardServiceTest {
                 request.setContent(content);
                 request.setWriter(writer);
                 request.setPassword(password);
+                List<String> hashtagList = new ArrayList<>();
+                hashtagList.add("해시");
+                hashtagList.add("태그");
+                request.setHashtagList(hashtagList);
 
                 BoardService boardService = new BoardServiceImpl(boardRepository);
                 BoardResponse response = boardService.saveBoard(request);

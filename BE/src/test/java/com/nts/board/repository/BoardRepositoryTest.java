@@ -2,7 +2,6 @@ package com.nts.board.repository;
 
 import com.nts.board.domain.Board;
 import com.nts.board.exception.BoardException;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.nts.board.exception.BoardException.BOARD_NOT_FOUND;
 import static org.assertj.core.api.Assertions.*;
@@ -29,16 +28,22 @@ public class BoardRepositoryTest {
     @DisplayName("게시물 저장 및 호출")
     void save() {
 
+        String title = "제목";
+        String content = "내용";
+        String writer = "작성자";
+        String hashtag = "해시,태그";
+
         Board board = Board.builder()
-                .title("제목")
-                .content("내용")
-                .writer("작성자").build();
+                .title(title)
+                .content(content)
+                .writer(writer)
+                .hashtag(hashtag)
+                .build();
 
         Board savedBoard = boardRepository.save(board);
+        Board findBoard = boardRepository.findById(savedBoard.getId()).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
 
-        Optional<Board> findBoard = boardRepository.findById(savedBoard.getId());
-
-        assertThat(findBoard.orElse(null)).isEqualTo(savedBoard);
+        assertThat(findBoard).isEqualTo(savedBoard);
     }
 
     @Test

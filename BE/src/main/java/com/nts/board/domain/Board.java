@@ -1,6 +1,7 @@
 package com.nts.board.domain;
 
 import com.nts.board.domain.defaults.BaseTimeEntity;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,16 +25,17 @@ public class Board extends BaseTimeEntity {
     private int unlikeCount;
     private long viewCount;
     private boolean deleted;
-    @OneToMany(mappedBy = "board")
-    private List<Hashtag> hashtagList = new ArrayList<>();
+    @Nullable
+    private String hashtag;
 
     @Builder
-    public Board(long id, String title, String content, String writer, String password) {
+    public Board(long id, String title, String content, String writer, String password, String hashtag) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.writer = writer;
         this.password = password;
+        this.hashtag = hashtag;
     }
 
     public void update(String title, String content) {

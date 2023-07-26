@@ -1,6 +1,5 @@
 package com.nts.board.request;
 
-import com.nts.board.domain.Hashtag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +14,13 @@ public class BoardRequest {
     String writer;
     String content;
     String password;
-    List<Hashtag> hashtagList;
+    List<String> hashtagList;
+
+    public String getHashtag() {
+        StringBuilder sb = new StringBuilder();
+        for (String hashtag : hashtagList) {
+            sb.append(hashtag).append(",");
+        }
+        return sb.deleteCharAt(sb.length() - 1).toString();
+    }
 }

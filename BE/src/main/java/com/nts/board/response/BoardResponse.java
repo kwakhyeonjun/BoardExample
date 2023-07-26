@@ -1,13 +1,13 @@
 package com.nts.board.response;
 
 import com.nts.board.domain.Board;
-import com.nts.board.domain.Hashtag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -21,7 +21,7 @@ public class BoardResponse {
     LocalDateTime createdDate;
     int likeCount;
     long viewCount;
-    List<Hashtag> hashtagList;
+    List<String> hashtagList;
 
     public static BoardResponse from(Board board) {
         BoardResponse boardResponse = new BoardResponse();
@@ -32,6 +32,9 @@ public class BoardResponse {
         boardResponse.setCreatedDate(board.getCreatedDate());
         boardResponse.setLikeCount(board.getLikeCount());
         boardResponse.setViewCount(board.getViewCount());
+
+        boardResponse.hashtagList = new ArrayList<>();
+        boardResponse.hashtagList.addAll(Arrays.asList(board.getHashtag().split(",")));
 
         return boardResponse;
     }

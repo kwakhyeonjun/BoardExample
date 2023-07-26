@@ -34,8 +34,10 @@ public class BoardServiceImpl implements BoardService {
                 .content(request.getContent())
                 .writer(request.getWriter())
                 .password(request.getPassword())
+                .hashtag(request.getHashtag())
                 .build();
         Board saveBoard = boardRepository.save(board);
+
         return BoardResponse.from(saveBoard);
     }
 
