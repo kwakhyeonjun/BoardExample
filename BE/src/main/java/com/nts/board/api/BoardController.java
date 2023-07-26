@@ -1,6 +1,6 @@
 package com.nts.board.api;
 
-import com.nts.board.request.BoardSaveRequest;
+import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
 import com.nts.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +23,16 @@ public class BoardController {
 
     // 게시글 등록
     @PostMapping("/board")
-    public ResponseEntity<BoardResponse> setBoard(@RequestBody BoardSaveRequest request) {
+    public ResponseEntity<BoardResponse> createBoard(@RequestBody BoardRequest request) {
         BoardResponse body = boardService.saveBoard(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
+    }
+
+    // 게시물 수정
+    @PutMapping("/board/{boardId}")
+    public ResponseEntity<BoardResponse> updateBoard(@PathVariable long boardId, @RequestBody BoardRequest request) {
+        BoardResponse body = boardService.updateBoard(boardId, request);
+        return ResponseEntity.ok().body(body);
     }
 
 }
