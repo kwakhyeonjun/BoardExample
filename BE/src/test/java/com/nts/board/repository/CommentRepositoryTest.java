@@ -86,7 +86,49 @@ class CommentRepositoryTest {
         List<Comment> commentList = commentRepository.findByBoard_Id(saveBoard.getId());
 
         assertThat(commentList.size()).isEqualTo(2);
+    }
 
+    @Test
+    @DisplayName("댓글 개수 세기")
+    void countComment() {
+        String title = "제목";
+        String content1 = "내용1";
+        String content2 = "내용2";
+        String writer = "작성자";
+        String password = "password";
 
+        Board board = Board.builder()
+                .title(title)
+                .password(password)
+                .writer(writer)
+                .build();
+        Board saveBoard = boardRepository.save(board);
+
+        Comment comment1 = Comment.builder()
+                .content(content1)
+                .writer(writer)
+                .password(password)
+                .board(saveBoard)
+                .build();
+        Comment comment2 = Comment.builder()
+                .content(content2)
+                .writer(writer)
+                .password(password)
+                .board(saveBoard)
+                .build();
+        Comment comment3 = Comment.builder()
+                .content(content1)
+                .writer(writer)
+                .password(password)
+                .deleted(true)
+                .board(board)
+                .build();
+        commentRepository.save(comment1);
+        commentRepository.save(comment2);
+        commentRepository.save(comment3);
+
+        Long count = commentRepository.countByDeletedIsFalse();
+
+        assertThat(count).isEqualTo(2);
     }
 }
