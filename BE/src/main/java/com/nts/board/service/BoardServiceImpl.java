@@ -3,7 +3,7 @@ package com.nts.board.service;
 import com.nts.board.domain.Board;
 import com.nts.board.exception.BoardException;
 import com.nts.board.repository.BoardRepository;
-import com.nts.board.request.BoardSaveRequest;
+import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardResponse saveBoard(BoardSaveRequest request) {
+    public BoardResponse saveBoard(BoardRequest request) {
         Board board = Board.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
@@ -34,6 +34,13 @@ public class BoardServiceImpl implements BoardService {
                 .build();
         Board saveBoard = boardRepository.save(board);
         return BoardResponse.from(saveBoard);
+    }
+
+    @Override
+    public BoardResponse updateBoard(long boardId, BoardRequest request) {
+        Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        findBoard.update(request.getTitle(), request.getContent());
+        return BoardResponse.from(findBoard);
     }
 
 }
