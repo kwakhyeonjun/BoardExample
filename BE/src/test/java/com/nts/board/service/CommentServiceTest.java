@@ -159,4 +159,44 @@ public class CommentServiceTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("댓글 삭제")
+    class DeleteComment {
+        @Nested
+        @DisplayName("정상 케이스")
+        class SuccessCase {
+            @Test
+            @DisplayName("선택한 댓글의 deleted = true")
+            void deleteCommentSuccess() {
+                Comment comment = Comment.builder()
+                        .content(content)
+                        .writer(writer)
+                        .password(password)
+                        .board(board)
+                        .build();
+                when(commentRepository.findById(id)).thenReturn(Optional.of(comment));
+
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
+                CommentResponse response = commentService.deleteComment(id);
+
+                assertThat(response.isDeleted()).isTrue();
+            }
+        }
+
+        @Nested
+        @DisplayName("비정상 케이스")
+        class FailCase {
+            @Test
+            @DisplayName("해당 댓글이 없는 경우")
+            void deleteCommentFail() {
+                when(commentRepository.findById(id)).thenThrow(new CommentException(COMMENT_NOT_FOUND));
+
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
+                Exception exception = assertThrows(CommentException.class, () -> commentService.deleteComment(id));
+
+                assertThat(exception.getMessage()).isEqualTo(COMMENT_NOT_FOUND);
+            }
+        }
+    }
 }

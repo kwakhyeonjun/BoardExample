@@ -22,6 +22,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.List;
 import java.util.Objects;
 
+import static org.assertj.core.api.Assertions.*;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
@@ -48,13 +50,13 @@ class CommentControllerTest {
     }
 
     @Nested
-    @Transactional
     @DisplayName("댓글 생성")
     class CreateComment {
         @Nested
         @DisplayName("정상 케이스")
         class SuccessCase {
             @Test
+            @Transactional
             @DisplayName("댓글 작성됨")
             void createCommentSuccess() {
                 Board board = Board.builder()
@@ -72,19 +74,19 @@ class CommentControllerTest {
 
                 ResponseEntity<CommentResponse> response = commentController.createComment(request);
 
-                Assertions.assertThat(Objects.requireNonNull(response.getBody()).getContent()).isEqualTo(content);
+                assertThat(Objects.requireNonNull(response.getBody()).getContent()).isEqualTo(content);
             }
         }
     }
 
     @Nested
-    @Transactional
     @DisplayName("댓글 목록")
-    class findCommentList {
+    class FindCommentList {
         @Nested
         @DisplayName("정상 케이스")
         class SuccessCase {
             @Test
+            @Transactional
             @DisplayName("댓글 목록 확인")
             void findCommentList() {
                 Board board = Board.builder()
@@ -114,7 +116,38 @@ class CommentControllerTest {
 
                 ResponseEntity<List<CommentResponse>> commentList = commentController.getCommentList(saveBoard.getId());
 
-                Assertions.assertThat(Objects.requireNonNull(commentList.getBody()).size()).isEqualTo(2);
+                assertThat(Objects.requireNonNull(commentList.getBody()).size()).isEqualTo(2);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("댓글 삭제")
+    class DeleteComment {
+        @Nested
+        @DisplayName("정상 케이스")
+        class SuccessCase {
+            @Test
+            @Transactional
+            @DisplayName("선택한 번호의 댓글 삭제")
+            void deleteCommentSuccess() {
+                Board board = Board.builder()
+                        .title(title)
+                        .writer(writer)
+                        .content(content)
+                        .build();
+                Board saveBoard = boardRepository.save(board);
+                Comment comment = Comment.builder()
+                        .content(content)
+                        .writer(writer)
+                        .password(password)
+                        .board(saveBoard)
+                        .build();
+                Comment saveComment = commentRepository.save(comment);
+
+                ResponseEntity<CommentResponse> response = commentController.deleteComment(saveComment.getId());
+
+                assertThat(Objects.requireNonNull(response.getBody()).isDeleted()).isTrue();
             }
         }
     }

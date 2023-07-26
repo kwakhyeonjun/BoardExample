@@ -32,4 +32,8 @@ public class Comment extends BaseTimeEntity {
         this.password = password;
         this.deleted = deleted;
     }
+
+    public void delete() {
+        this.deleted = true;
+    }
 }
