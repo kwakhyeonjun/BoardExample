@@ -1,10 +1,13 @@
 package com.nts.board.api;
 
 import com.nts.board.domain.Board;
+import com.nts.board.domain.Comment;
 import com.nts.board.exception.BoardException;
 import com.nts.board.repository.BoardRepository;
+import com.nts.board.repository.CommentRepository;
 import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
+import com.nts.board.response.CountResponse;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
@@ -267,5 +270,29 @@ class BoardControllerTest {
                 assertThat(Objects.requireNonNull(response.getBody()).size()).isEqualTo(2);
             }
         }
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("검색")
+    void search() {
+        for (int i = 0; i < 11; i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < 3; j++) {
+                sb.append("해시").append(i).append(",");
+            }
+            String hashtag = sb.deleteCharAt(sb.length() - 1).toString();
+            Board board = Board.builder()
+                    .title("제목" + i)
+                    .content("내용" + i)
+                    .writer("작성자" + i)
+                    .hashtag(hashtag)
+                    .build();
+            boardRepository.save(board);
+        }
+
+        ResponseEntity<List<BoardResponse>> response = boardController.searchBoard("TITLE", "제목");
+
+        assertThat(Objects.requireNonNull(response.getBody()).size()).isEqualTo(11);
     }
 }

@@ -2,6 +2,7 @@ package com.nts.board.repository;
 
 import com.nts.board.domain.Board;
 import com.nts.board.exception.BoardException;
+import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,6 +3,7 @@ package com.nts.board.service;
 import com.nts.board.domain.Board;
 import com.nts.board.exception.BoardException;
 import com.nts.board.repository.BoardRepository;
+import com.nts.board.repository.SearchQueryRepository;
 import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import static com.nts.board.exception.BoardException.*;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
+    private final SearchQueryRepository searchQueryRepository;
 
     @Override
     public BoardResponse findBoard(long boardId) {
@@ -63,5 +65,12 @@ public class BoardServiceImpl implements BoardService {
                 .collect(Collectors.toList());
     }
 
-
+    @Override
+    public List<BoardResponse> searchBoardList(String title, String content, String writer, String hashtag) {
+        List<Board> boardList = searchQueryRepository.findBoardContains(title, content, writer, hashtag);
+        return boardList.stream()
+                .filter(board -> !board.isDeleted())
+                .map(BoardResponse::from)
+                .collect(Collectors.toList());
+    }
 }

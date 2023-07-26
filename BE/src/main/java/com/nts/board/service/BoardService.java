@@ -11,4 +11,5 @@ public interface BoardService {
     BoardResponse updateBoard(long boardId, BoardRequest request);
     BoardResponse deleteBoard(long boardId);
     List<BoardResponse> findBoardList();
+    List<BoardResponse> searchBoardList(String title, String content, String writer, String hashtag);
 }
