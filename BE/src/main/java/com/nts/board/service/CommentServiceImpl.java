@@ -10,6 +10,9 @@ import com.nts.board.response.CommentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -28,5 +31,13 @@ public class CommentServiceImpl implements CommentService {
                 .build();
         Comment savedComment = commentRepository.save(comment);
         return CommentResponse.from(savedComment);
+    }
+
+    @Override
+    public List<CommentResponse> getCommentList(long boardId) {
+        List<Comment> commentList = commentRepository.findByBoard_Id(boardId);
+        return commentList.stream()
+                .map(CommentResponse::from)
+                .collect(Collectors.toList());
     }
 }

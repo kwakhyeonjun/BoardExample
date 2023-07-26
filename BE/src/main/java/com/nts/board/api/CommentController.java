@@ -6,9 +6,9 @@ import com.nts.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,4 +21,11 @@ public class CommentController {
         CommentResponse body = commentService.createComment(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
+
+    @GetMapping("/comment/{boardId}")
+    public ResponseEntity<List<CommentResponse>> getCommentList(@PathVariable Long boardId) {
+        List<CommentResponse> body = commentService.getCommentList(boardId);
+        return ResponseEntity.ok().body(body);
+    }
+
 }

@@ -8,19 +8,19 @@ import com.nts.board.repository.BoardRepository;
 import com.nts.board.repository.CommentRepository;
 import com.nts.board.request.CommentRequest;
 import com.nts.board.response.CommentResponse;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.nts.board.exception.BoardException.BOARD_NOT_FOUND;
 import static com.nts.board.exception.CommentException.COMMENT_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -44,6 +44,7 @@ public class CommentServiceTest {
 
     @BeforeEach
     void setup() {
+        id = 1L;
         content = "댓글내용";
         writer = "작성자";
         password = "password";
@@ -107,6 +108,54 @@ public class CommentServiceTest {
                 Exception exception = assertThrows(CommentException.class, () -> commentService.createComment(request));
 
                 assertThat(COMMENT_NOT_FOUND).isEqualTo(exception.getMessage());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("댓글 목록")
+    class CommentList {
+        @Nested
+        @DisplayName("정상 케이스")
+        class SuccessCase {
+            @Test
+            @DisplayName("게시글에 대한 댓글 목록을 가져옴")
+            void findCommentListSuccess() {
+                List<Comment> commentList = new ArrayList<>();
+                commentList.add(Comment.builder()
+                        .id(id)
+                        .content(content)
+                        .board(board)
+                        .writer(writer)
+                        .build());
+                commentList.add(Comment.builder()
+                        .id(id)
+                        .content(content)
+                        .board(board)
+                        .writer(writer)
+                        .build());
+                long boardId = 1L;
+                when(commentRepository.findByBoard_Id(boardId)).thenReturn(commentList);
+
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
+                List<CommentResponse> commentResponseList = commentService.getCommentList(boardId);
+
+                assertThat(commentList.size()).isEqualTo(commentResponseList.size());
+            }
+        }
+
+        @Nested
+        @DisplayName("비정상 케이스")
+        class FailCase {
+            @Test
+            @DisplayName("선택한 게시물이 없는 경우")
+            void findCommentListFail() {
+                when(commentRepository.findByBoard_Id(boardId)).thenThrow(new BoardException(BOARD_NOT_FOUND));
+
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
+                Exception exception = assertThrows(BoardException.class, () -> commentService.getCommentList(boardId));
+
+                assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
             }
         }
     }
