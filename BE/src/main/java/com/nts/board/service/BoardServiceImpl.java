@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 import static com.nts.board.exception.BoardException.*;
 
 @Service
@@ -42,5 +44,13 @@ public class BoardServiceImpl implements BoardService {
         findBoard.update(request.getTitle(), request.getContent());
         return BoardResponse.from(findBoard);
     }
+
+    @Override
+    public BoardResponse deleteBoard(long boardId) {
+        Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        boardRepository.deleteById(boardId);
+        return BoardResponse.from(findBoard);
+    }
+
 
 }

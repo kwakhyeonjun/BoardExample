@@ -89,9 +89,7 @@ class BoardServiceTest {
 
                 BoardService boardService = new BoardServiceImpl(boardRepository);
 
-                Exception exception = assertThrows(BoardException.class, () -> {
-                    boardService.saveBoard(request);
-                });
+                Exception exception = assertThrows(BoardException.class, () -> boardService.saveBoard(request));
 
                 assertThat(exception.getMessage()).isEqualTo(BOARD_NOT_FOUND);
             }
@@ -154,9 +152,7 @@ class BoardServiceTest {
 
                 BoardService boardService = new BoardServiceImpl(boardRepository);
 
-                Exception exception = assertThrows(BoardException.class, () -> {
-                    boardService.findBoard(id);
-                });
+                Exception exception = assertThrows(BoardException.class, () -> boardService.findBoard(id));
 
                 assertThat(exception.getMessage()).isEqualTo(BOARD_NOT_FOUND);
             }
@@ -224,13 +220,65 @@ class BoardServiceTest {
                 request.setTitle(title);
                 request.setContent(newContent);
 
-                Exception exception = assertThrows(BoardException.class, () -> {
-                    boardService.updateBoard(id, request);
-                });
+                Exception exception = assertThrows(BoardException.class, () -> boardService.updateBoard(id, request));
 
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
             }
         }
+    }
 
+    @Nested
+    @DisplayName("게시물 삭제")
+    class DeleteBoard {
+        private Long id;
+        private String title;
+        private String content;
+        private String writer;
+        private String password;
+
+        @BeforeEach
+        void setup() {
+            id = 1L;
+            title = "제목";
+            content = "내용";
+            writer = "작성자";
+            password = "password";
+        }
+
+        @Nested
+        @DisplayName("정상 케이스")
+        class SuccessCase {
+            @Test
+            @DisplayName("기존의 게시물을 정상적으로 제거함")
+            void deleteBoardSuccess() {
+                Board board = Board.builder()
+                        .title(title)
+                        .content(content)
+                        .writer(writer)
+                        .password(password)
+                        .build();
+                when(boardRepository.findById(id)).thenReturn(Optional.of(board));
+
+                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardResponse boardResponse = boardService.deleteBoard(id);
+
+                assertThat(boardResponse.getContent()).isEqualTo(content);
+            }
+        }
+
+        @Nested
+        @DisplayName("비정상 케이스")
+        class FailCase {
+            @Test
+            @DisplayName("삭제하려는 게시물이 존재하지 않는 경우")
+            void deleteBoardFail() {
+                when(boardRepository.findById(id)).thenThrow(new BoardException(BOARD_NOT_FOUND));
+                BoardService boardService = new BoardServiceImpl(boardRepository);
+
+                Exception exception = assertThrows(BoardException.class, () -> boardService.deleteBoard(id));
+
+                assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
+            }
+        }
     }
 }

@@ -35,4 +35,10 @@ public class BoardController {
         return ResponseEntity.ok().body(body);
     }
 
+    // 게시물 삭제
+    @DeleteMapping("/board/{boardId}")
+    public ResponseEntity<BoardResponse> deleteBoard(@PathVariable long boardId) {
+        BoardResponse body = boardService.deleteBoard(boardId);
+        return ResponseEntity.ok().body(body);
+    }
 }

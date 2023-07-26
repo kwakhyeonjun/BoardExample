@@ -7,4 +7,5 @@ public interface BoardService {
     BoardResponse findBoard(long boardId);
     BoardResponse saveBoard(BoardRequest request);
     BoardResponse updateBoard(long boardId, BoardRequest request);
+    BoardResponse deleteBoard(long boardId);
 }
