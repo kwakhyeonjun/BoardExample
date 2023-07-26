@@ -12,6 +12,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ public class CommentServiceTest {
     CommentRepository commentRepository;
     @Mock
     BoardRepository boardRepository;
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     private Long id;
     private String content;
@@ -81,7 +84,7 @@ public class CommentServiceTest {
                 request.setPassword(password);
                 request.setBoardId(boardId);
 
-                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository, passwordEncoder);
                 CommentResponse response = commentService.createComment(request);
 
                 assertThat(response.getContent()).isEqualTo(content);
@@ -103,7 +106,7 @@ public class CommentServiceTest {
                 request.setPassword(password);
                 request.setBoardId(boardId);
 
-                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository, passwordEncoder);
                 Exception exception = assertThrows(CommentException.class, () -> commentService.createComment(request));
 
                 assertThat(COMMENT_NOT_FOUND).isEqualTo(exception.getMessage());
@@ -136,7 +139,7 @@ public class CommentServiceTest {
                 long boardId = 1L;
                 when(commentRepository.findByBoard_Id(boardId)).thenReturn(commentList);
 
-                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository, passwordEncoder);
                 List<CommentResponse> commentResponseList = commentService.getCommentList(boardId);
 
                 assertThat(commentList.size()).isEqualTo(commentResponseList.size());
@@ -151,7 +154,7 @@ public class CommentServiceTest {
             void findCommentListFail() {
                 when(commentRepository.findByBoard_Id(boardId)).thenThrow(new BoardException(BOARD_NOT_FOUND));
 
-                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository, passwordEncoder);
                 Exception exception = assertThrows(BoardException.class, () -> commentService.getCommentList(boardId));
 
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
@@ -176,8 +179,10 @@ public class CommentServiceTest {
                         .build();
                 when(commentRepository.findById(id)).thenReturn(Optional.of(comment));
 
-                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
-                CommentResponse response = commentService.deleteComment(id);
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository, passwordEncoder);
+                CommentRequest request = new CommentRequest();
+                request.setPassword(password);
+                CommentResponse response = commentService.deleteComment(id, request);
 
                 assertThat(response.isDeleted()).isTrue();
             }
@@ -191,8 +196,10 @@ public class CommentServiceTest {
             void deleteCommentFail() {
                 when(commentRepository.findById(id)).thenThrow(new CommentException(COMMENT_NOT_FOUND));
 
-                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository);
-                Exception exception = assertThrows(CommentException.class, () -> commentService.deleteComment(id));
+                CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository, passwordEncoder);
+                CommentRequest request = new CommentRequest();
+                request.setPassword(password);
+                Exception exception = assertThrows(CommentException.class, () -> commentService.deleteComment(id, request));
 
                 assertThat(exception.getMessage()).isEqualTo(COMMENT_NOT_FOUND);
             }

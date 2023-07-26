@@ -1,13 +1,10 @@
 package com.nts.board.api;
 
 import com.nts.board.domain.Board;
-import com.nts.board.domain.Comment;
 import com.nts.board.exception.BoardException;
 import com.nts.board.repository.BoardRepository;
-import com.nts.board.repository.CommentRepository;
 import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
-import com.nts.board.response.CountResponse;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
@@ -15,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
@@ -34,6 +32,8 @@ class BoardControllerTest {
 
     @Autowired
     BoardRepository boardRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Nested
     @DisplayName("게시물 생성")
@@ -49,7 +49,7 @@ class BoardControllerTest {
             title = "제목";
             content = "내용";
             writer = "작성자";
-            password = "비밀번호";
+            password = "password";
         }
 
         @Test
@@ -123,12 +123,14 @@ class BoardControllerTest {
         private String title;
         private String content;
         private String writer;
+        private String password;
 
         @BeforeEach
         void setup() {
             title = "제목";
             content = "내용";
             writer = "작성자";
+            password = "password";
         }
 
         @Nested
@@ -142,6 +144,7 @@ class BoardControllerTest {
                         .title(title)
                         .content(content)
                         .writer(writer)
+                        .password(passwordEncoder.encode(password))
                         .build();
                 Board saveBoard = boardRepository.save(board);
 
@@ -150,6 +153,7 @@ class BoardControllerTest {
                 BoardRequest request = new BoardRequest();
                 request.setTitle(newTitle);
                 request.setContent(newContent);
+                request.setPassword(password);
 
                 ResponseEntity<BoardResponse> response = boardController.updateBoard(saveBoard.getId(), request);
 
@@ -206,13 +210,16 @@ class BoardControllerTest {
                         .title(title)
                         .writer(writer)
                         .content(content)
-                        .password(password)
+                        .password(passwordEncoder.encode(password))
                         .build();
-                long id = boardRepository.save(board).getId();
+                Board saveboard = boardRepository.save(board);
 
-                ResponseEntity<BoardResponse> response = boardController.deleteBoard(id);
+                BoardRequest request = new BoardRequest();
+                request.setPassword(password);
 
-                assertThat(Objects.requireNonNull(response.getBody()).getId()).isEqualTo(id);
+                ResponseEntity<BoardResponse> response = boardController.deleteBoard(saveboard.getId(), request);
+
+                assertThat(Objects.requireNonNull(response.getBody()).getId()).isEqualTo(saveboard.getId());
             }
         }
 
@@ -225,7 +232,10 @@ class BoardControllerTest {
             void deleteBoardFail() {
                 long id = 0L;
 
-                Exception exception = assertThrows(BoardException.class, () -> boardController.deleteBoard(id));
+                BoardRequest request = new BoardRequest();
+                request.setPassword(password);
+
+                Exception exception = assertThrows(BoardException.class, () -> boardController.deleteBoard(id, request));
 
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
             }

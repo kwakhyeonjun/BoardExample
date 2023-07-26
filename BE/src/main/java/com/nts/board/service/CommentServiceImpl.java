@@ -9,11 +9,13 @@ import com.nts.board.repository.CommentRepository;
 import com.nts.board.request.CommentRequest;
 import com.nts.board.response.CommentResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.nts.board.exception.CommentException.COMMENT_FORBIDDEN;
 import static com.nts.board.exception.CommentException.COMMENT_NOT_FOUND;
 
 @Service
@@ -22,6 +24,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public CommentResponse createComment(CommentRequest request) {
@@ -29,7 +32,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = Comment.builder()
                 .content(request.getContent())
                 .writer(request.getWriter())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .board(board)
                 .build();
         Comment savedComment = commentRepository.save(comment);
@@ -46,8 +49,10 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse deleteComment(long commentId) {
+    public CommentResponse deleteComment(long commentId, CommentRequest request) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(COMMENT_NOT_FOUND));
+        if(passwordEncoder.matches(comment.getPassword(), request.getPassword()))
+            throw new CommentException(COMMENT_FORBIDDEN);
         comment.delete();
         return CommentResponse.from(comment);
     }

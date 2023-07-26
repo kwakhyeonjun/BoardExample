@@ -6,6 +6,7 @@ import com.nts.board.repository.BoardRepository;
 import com.nts.board.repository.SearchQueryRepository;
 import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
     private final SearchQueryRepository searchQueryRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public BoardResponse findBoard(long boardId) {
@@ -35,7 +37,7 @@ public class BoardServiceImpl implements BoardService {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .writer(request.getWriter())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .hashtag(request.getHashtag())
                 .build();
         Board saveBoard = boardRepository.save(board);
@@ -46,13 +48,17 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardResponse updateBoard(long boardId, BoardRequest request) {
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        if(!passwordEncoder.matches(request.getPassword(), findBoard.getPassword()))
+            throw new BoardException(BOARD_FORBIDDEN);
         findBoard.update(request.getTitle(), request.getContent());
         return BoardResponse.from(findBoard);
     }
 
     @Override
-    public BoardResponse deleteBoard(long boardId) {
+    public BoardResponse deleteBoard(long boardId, BoardRequest request) {
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        if(!passwordEncoder.matches(request.getPassword(), findBoard.getPassword()))
+            throw new BoardException(BOARD_FORBIDDEN);
         boardRepository.deleteById(boardId);
         return BoardResponse.from(findBoard);
     }

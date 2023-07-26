@@ -34,7 +34,8 @@ public class BoardResponse {
         boardResponse.setViewCount(board.getViewCount());
 
         boardResponse.hashtagList = new ArrayList<>();
-        boardResponse.hashtagList.addAll(Arrays.asList(board.getHashtag().split(",")));
+        if(board.getHashtag() != null)
+            boardResponse.hashtagList.addAll(Arrays.asList(board.getHashtag().split(",")));
 
         return boardResponse;
     }

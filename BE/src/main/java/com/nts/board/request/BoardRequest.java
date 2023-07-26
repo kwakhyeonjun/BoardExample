@@ -17,6 +17,7 @@ public class BoardRequest {
     List<String> hashtagList;
 
     public String getHashtag() {
+        if(hashtagList == null) return null;
         StringBuilder sb = new StringBuilder();
         for (String hashtag : hashtagList) {
             sb.append(hashtag).append(",");

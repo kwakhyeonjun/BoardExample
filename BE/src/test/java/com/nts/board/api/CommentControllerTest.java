@@ -7,7 +7,6 @@ import com.nts.board.repository.CommentRepository;
 import com.nts.board.request.CommentRequest;
 import com.nts.board.response.CommentResponse;
 import jakarta.transaction.Transactional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -145,7 +144,10 @@ class CommentControllerTest {
                         .build();
                 Comment saveComment = commentRepository.save(comment);
 
-                ResponseEntity<CommentResponse> response = commentController.deleteComment(saveComment.getId());
+                CommentRequest request = new CommentRequest();
+                request.setPassword(password);
+
+                ResponseEntity<CommentResponse> response = commentController.deleteComment(saveComment.getId(), request);
 
                 assertThat(Objects.requireNonNull(response.getBody()).isDeleted()).isTrue();
             }
