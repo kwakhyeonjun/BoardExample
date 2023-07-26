@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardSaveRequest {
+public class BoardRequest {
     String title;
     String writer;
     String content;
