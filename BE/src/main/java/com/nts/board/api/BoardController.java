@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class BoardController {
@@ -39,6 +41,12 @@ public class BoardController {
     @DeleteMapping("/board/{boardId}")
     public ResponseEntity<BoardResponse> deleteBoard(@PathVariable long boardId) {
         BoardResponse body = boardService.deleteBoard(boardId);
+        return ResponseEntity.ok().body(body);
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<BoardResponse>> findBoardAll() {
+        List<BoardResponse> body = boardService.findBoardList();
         return ResponseEntity.ok().body(body);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.nts.board.exception.BoardException.BOARD_NOT_FOUND;
@@ -81,5 +82,36 @@ public class BoardRepositoryTest {
         });
 
         assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("게시물 목록")
+    void findBoardList() {
+        String title1 = "제목1";
+        String title2 = "제목2";
+        String writer = "작성자";
+        String content = "내용";
+        String password = "password";
+
+        Board board1 = Board.builder()
+                .title(title1)
+                .writer(writer)
+                .content(content)
+                .password(password)
+                .build();
+
+        Board board2 = Board.builder()
+                .title(title2)
+                .writer(writer)
+                .content(content)
+                .password(password)
+                .build();
+
+        boardRepository.save(board1);
+        boardRepository.save(board2);
+
+        List<Board> boardList = boardRepository.findAll();
+
+        assertThat(boardList.size()).isEqualTo(2);
     }
 }

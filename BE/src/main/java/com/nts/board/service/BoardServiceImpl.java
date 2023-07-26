@@ -9,7 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.nts.board.exception.BoardException.*;
 
@@ -50,6 +51,14 @@ public class BoardServiceImpl implements BoardService {
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         boardRepository.deleteById(boardId);
         return BoardResponse.from(findBoard);
+    }
+
+    @Override
+    public List<BoardResponse> findBoardList() {
+        List<Board> boardList = boardRepository.findAll();
+        return boardList.stream()
+                .map(BoardResponse::from)
+                .collect(Collectors.toList());
     }
 
 

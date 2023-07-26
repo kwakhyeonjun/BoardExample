@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.nts.board.exception.BoardException.BOARD_NOT_FOUND;
@@ -278,6 +280,32 @@ class BoardServiceTest {
                 Exception exception = assertThrows(BoardException.class, () -> boardService.deleteBoard(id));
 
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("게시글 목록")
+    class findBoardList {
+        List<Board> boardList;
+        @BeforeEach
+        void setup() {
+            boardList = new ArrayList<>();
+            boardList.add(Board.builder().build());
+            boardList.add(Board.builder().build());
+        }
+        @Nested
+        @DisplayName("정상 케이스")
+        class SuccessCase {
+            @Test
+            @DisplayName("전체 목록을 호출")
+            void findBoardListSuccess() {
+                when(boardRepository.findAll()).thenReturn(boardList);
+
+                BoardService boardService = new BoardServiceImpl(boardRepository);
+                List<BoardResponse> response = boardService.findBoardList();
+
+                assertThat(response.size()).isEqualTo(2);
             }
         }
     }

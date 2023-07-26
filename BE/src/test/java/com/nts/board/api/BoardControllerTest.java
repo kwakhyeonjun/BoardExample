@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.nts.board.exception.BoardException.BOARD_NOT_FOUND;
@@ -49,6 +50,7 @@ class BoardControllerTest {
         }
 
         @Test
+        @Transactional
         @DisplayName("요청에 맞는 게시물 저장")
         void createBoardSuccess() {
             BoardRequest request = new BoardRequest();
@@ -81,6 +83,7 @@ class BoardControllerTest {
         @DisplayName("정상 케이스")
         class SuccessCase {
             @Test
+            @Transactional
             @DisplayName("게시물 번호로 찾기")
             void getBoardSuccess() {
                 Board board = Board.builder()
@@ -100,6 +103,7 @@ class BoardControllerTest {
         @DisplayName("비정상 케이스")
         class FailCase {
             @Test
+            @Transactional
             @DisplayName("존재하지 않는 게시물인 경우")
             void getBoardFail() {
                 Exception exception = assertThrows(BoardException.class, () -> {
@@ -128,6 +132,7 @@ class BoardControllerTest {
         @DisplayName("정상 케이스")
         class SuccessCase {
             @Test
+            @Transactional
             @DisplayName("기존에 존재하는 게시물을 수정함")
             void updateBoardSuccess() {
                 Board board = Board.builder()
@@ -154,6 +159,7 @@ class BoardControllerTest {
         @DisplayName("비정상 케이스")
         class FailCase {
             @Test
+            @Transactional
             @DisplayName("존재하지 않는 게시물을 수정하려 함")
             void updateBoardFail() {
                 String newTitle = "새제목";
@@ -190,6 +196,7 @@ class BoardControllerTest {
         @DisplayName("정상 케이스")
         class SuccessCase {
             @Test
+            @Transactional
             @DisplayName("저장된 케이스 삭제")
             void deleteBoardSuccess() {
                 Board board = Board.builder()
@@ -200,10 +207,9 @@ class BoardControllerTest {
                         .build();
                 long id = boardRepository.save(board).getId();
 
-                boardController.deleteBoard(id);
+                ResponseEntity<BoardResponse> response = boardController.deleteBoard(id);
 
-                Exception exception = assertThrows(BoardException.class, () -> boardRepository.findById(id));
-                assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
+                assertThat(Objects.requireNonNull(response.getBody()).getId()).isEqualTo(id);
             }
         }
 
@@ -211,6 +217,7 @@ class BoardControllerTest {
         @DisplayName("비정상 케이스")
         class FailCase {
             @Test
+            @Transactional
             @DisplayName("삭제하려는 게시물이 존재하지 않는 경우")
             void deleteBoardFail() {
                 long id = 0L;
@@ -218,6 +225,46 @@ class BoardControllerTest {
                 Exception exception = assertThrows(BoardException.class, () -> boardController.deleteBoard(id));
 
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("게시물 목록")
+    class BoardList {
+        @Nested
+        @DisplayName("정상 케이스")
+        class SuccessCase {
+            @Test
+            @Transactional
+            @DisplayName("전체 목록을 호출")
+            void findBoardListAll() {
+                String title1 = "제목1";
+                String title2 = "제목2";
+                String writer = "작성자";
+                String content = "내용";
+                String password = "password";
+
+                Board board1 = Board.builder()
+                        .title(title1)
+                        .writer(writer)
+                        .content(content)
+                        .password(password)
+                        .build();
+
+                Board board2 = Board.builder()
+                        .title(title2)
+                        .writer(writer)
+                        .content(content)
+                        .password(password)
+                        .build();
+
+                boardRepository.save(board1);
+                boardRepository.save(board2);
+
+                ResponseEntity<List<BoardResponse>> response = boardController.findBoardAll();
+
+                assertThat(Objects.requireNonNull(response.getBody()).size()).isEqualTo(2);
             }
         }
     }
