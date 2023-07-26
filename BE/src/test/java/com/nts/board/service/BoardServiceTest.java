@@ -3,6 +3,7 @@ package com.nts.board.service;
 import com.nts.board.domain.Board;
 import com.nts.board.exception.BoardException;
 import com.nts.board.repository.BoardRepository;
+import com.nts.board.repository.SearchQueryRepository;
 import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
 import org.junit.Before;
@@ -32,6 +33,8 @@ class BoardServiceTest {
 
     @Mock
     BoardRepository boardRepository;
+    @Mock
+    SearchQueryRepository searchQueryRepository;
 
     @Before
     public void before() {
@@ -83,7 +86,7 @@ class BoardServiceTest {
                 hashtagList.add("태그");
                 request.setHashtagList(hashtagList);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository);
                 BoardResponse response = boardService.saveBoard(request);
 
                 assertThat(response.getTitle()).isEqualTo(request.getTitle());
@@ -105,7 +108,7 @@ class BoardServiceTest {
                 request.setWriter(writer);
                 request.setPassword(password);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository);
 
                 Exception exception = assertThrows(BoardException.class, () -> boardService.saveBoard(request));
 
@@ -152,7 +155,7 @@ class BoardServiceTest {
 
                 Board saveBoard = boardRepository.save(board);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository);
                 BoardResponse findBoard = boardService.findBoard(saveBoard.getId());
 
                 assertThat(findBoard.getTitle()).isEqualTo(saveBoard.getTitle());
@@ -168,7 +171,7 @@ class BoardServiceTest {
             public void findBoardFail() {
                 when(boardRepository.findById(id)).thenThrow(new BoardException(BOARD_NOT_FOUND));
 
-                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository);
 
                 Exception exception = assertThrows(BoardException.class, () -> boardService.findBoard(id));
 
@@ -209,7 +212,7 @@ class BoardServiceTest {
                         .build();
                 when(boardRepository.findById(id)).thenReturn(Optional.of(board));
 
-                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository);
                 String newContent = "새로운 내용";
 
                 BoardRequest request = new BoardRequest();
@@ -231,7 +234,7 @@ class BoardServiceTest {
             void updateBoardFail() {
                 when(boardRepository.findById(id)).thenThrow(new BoardException(BOARD_NOT_FOUND));
 
-                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository);
                 String newContent = "새로운 내용";
 
                 BoardRequest request = new BoardRequest();
@@ -277,7 +280,7 @@ class BoardServiceTest {
                         .build();
                 when(boardRepository.findById(id)).thenReturn(Optional.of(board));
 
-                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository);
                 BoardResponse boardResponse = boardService.deleteBoard(id);
 
                 assertThat(boardResponse.getContent()).isEqualTo(content);
@@ -291,7 +294,7 @@ class BoardServiceTest {
             @DisplayName("삭제하려는 게시물이 존재하지 않는 경우")
             void deleteBoardFail() {
                 when(boardRepository.findById(id)).thenThrow(new BoardException(BOARD_NOT_FOUND));
-                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository);
 
                 Exception exception = assertThrows(BoardException.class, () -> boardService.deleteBoard(id));
 
@@ -318,13 +321,11 @@ class BoardServiceTest {
             void findBoardListSuccess() {
                 when(boardRepository.findAll()).thenReturn(boardList);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository);
                 List<BoardResponse> response = boardService.findBoardList();
 
                 assertThat(response.size()).isEqualTo(2);
             }
         }
     }
-
-
 }

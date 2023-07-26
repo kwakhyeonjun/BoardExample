@@ -1,5 +1,6 @@
 package com.nts.board.api;
 
+import com.nts.board.api.defaults.SearchType;
 import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
 import com.nts.board.service.BoardService;
@@ -47,6 +48,27 @@ public class BoardController {
     @GetMapping("/")
     public ResponseEntity<List<BoardResponse>> findBoardAll() {
         List<BoardResponse> body = boardService.findBoardList();
+        return ResponseEntity.ok().body(body);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BoardResponse>> searchBoard(@RequestParam("t") String type, @RequestParam("q") String keyword) {
+        String title = null;
+        String content = null;
+        String writer = null;
+        String hashtag = null;
+
+        if(SearchType.TITLE.toString().equals(type)) {
+            title = keyword;
+        } else if(SearchType.CONTENT.toString().equals(type)) {
+            content = keyword;
+        } else if(SearchType.WRITER.toString().equals(type)) {
+            writer = keyword;
+        } else if(SearchType.HASHTAG.toString().equals(keyword)) {
+            hashtag = keyword;
+        }
+
+        List<BoardResponse> body = boardService.searchBoardList(title, content, writer, hashtag);
         return ResponseEntity.ok().body(body);
     }
 }
