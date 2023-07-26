@@ -28,10 +28,16 @@ public class Board extends BaseTimeEntity {
     private List<Hashtag> hashtagList = new ArrayList<>();
 
     @Builder
-    public Board(String title, String content, String writer, String password) {
+    public Board(long id, String title, String content, String writer, String password) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.writer = writer;
         this.password = password;
+    }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 }
