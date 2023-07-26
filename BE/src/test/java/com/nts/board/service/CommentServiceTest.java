@@ -20,7 +20,6 @@ import java.util.Optional;
 import static com.nts.board.exception.BoardException.BOARD_NOT_FOUND;
 import static com.nts.board.exception.CommentException.COMMENT_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

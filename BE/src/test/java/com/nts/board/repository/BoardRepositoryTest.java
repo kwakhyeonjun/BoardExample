@@ -119,4 +119,35 @@ public class BoardRepositoryTest {
 
         assertThat(boardList.size()).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("게시물 개수 세기")
+    void countBoard() {
+        String title1 = "제목1";
+        String title2 = "제목2";
+        String writer = "작성자";
+        String content = "내용";
+        String password = "password";
+
+        Board board1 = Board.builder()
+                .title(title1)
+                .writer(writer)
+                .content(content)
+                .password(password)
+                .build();
+
+        Board board2 = Board.builder()
+                .title(title2)
+                .writer(writer)
+                .content(content)
+                .password(password)
+                .build();
+
+        boardRepository.save(board1);
+        boardRepository.save(board2);
+
+        Long count = boardRepository.countByDeletedIsFalse();
+
+        assertThat(count).isEqualTo(2);
+    }
 }
