@@ -6,6 +6,7 @@ import com.nts.board.repository.BoardRepository;
 import com.nts.board.repository.SearchQueryRepository;
 import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
+import com.nts.board.security.JwtUtilities;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nts.board.exception.BoardException.BOARD_NOT_FOUND;
+import static com.nts.board.exception.BoardException.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +38,8 @@ class BoardServiceTest {
     SearchQueryRepository searchQueryRepository;
     @Mock
     PasswordEncoder passwordEncoder;
+    @Mock
+    JwtUtilities jwtUtilities;
     @Before
     public void before() {
         MockitoAnnotations.openMocks(this);
@@ -87,7 +90,7 @@ class BoardServiceTest {
                 hashtagList.add("태그");
                 request.setHashtagList(hashtagList);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder, jwtUtilities);
                 BoardResponse response = boardService.saveBoard(request);
 
                 assertThat(response.getTitle()).isEqualTo(request.getTitle());
@@ -109,7 +112,7 @@ class BoardServiceTest {
                 request.setWriter(writer);
                 request.setPassword(password);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder, jwtUtilities);
 
                 Exception exception = assertThrows(BoardException.class, () -> boardService.saveBoard(request));
 
@@ -156,7 +159,7 @@ class BoardServiceTest {
 
                 Board saveBoard = boardRepository.save(board);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder, jwtUtilities);
                 BoardResponse findBoard = boardService.findBoard(saveBoard.getId());
 
                 assertThat(findBoard.getTitle()).isEqualTo(saveBoard.getTitle());
@@ -172,7 +175,7 @@ class BoardServiceTest {
             public void findBoardFail() {
                 when(boardRepository.findById(id)).thenThrow(new BoardException(BOARD_NOT_FOUND));
 
-                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder, jwtUtilities);
 
                 Exception exception = assertThrows(BoardException.class, () -> boardService.findBoard(id));
 
@@ -210,18 +213,24 @@ class BoardServiceTest {
                         .title(title)
                         .content(content)
                         .writer(writer)
+                        .password(password)
                         .build();
                 when(boardRepository.findById(id)).thenReturn(Optional.of(board));
+                String token = "token";
+                when(jwtUtilities.getToken(token)).thenReturn(token);
+                when(jwtUtilities.validateToken(token)).thenReturn(true);
+                when(passwordEncoder.matches(password, password)).thenReturn(true);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder, jwtUtilities);
                 String newContent = "새로운 내용";
 
                 BoardRequest request = new BoardRequest();
                 request.setTitle(title);
                 request.setContent(newContent);
+                request.setPassword(password);
 
 
-                BoardResponse boardResponse = boardService.updateBoard(id, request);
+                BoardResponse boardResponse = boardService.updateBoard(token, id, request);
                 assertThat(boardResponse.getContent()).isEqualTo(newContent);
             }
         }
@@ -234,15 +243,18 @@ class BoardServiceTest {
             @DisplayName("수정할 게시물을 찾지 못한 경우")
             void updateBoardFail() {
                 when(boardRepository.findById(id)).thenThrow(new BoardException(BOARD_NOT_FOUND));
+                String token = "token";
+                when(jwtUtilities.getToken(token)).thenReturn(token);
+                when(jwtUtilities.validateToken(token)).thenReturn(true);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder, jwtUtilities);
                 String newContent = "새로운 내용";
 
                 BoardRequest request = new BoardRequest();
                 request.setTitle(title);
                 request.setContent(newContent);
 
-                Exception exception = assertThrows(BoardException.class, () -> boardService.updateBoard(id, request));
+                Exception exception = assertThrows(BoardException.class, () -> boardService.updateBoard(token, id, request));
 
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
             }
@@ -280,12 +292,16 @@ class BoardServiceTest {
                         .password(password)
                         .build();
                 when(boardRepository.findById(id)).thenReturn(Optional.of(board));
+                String token = "token";
+                when(jwtUtilities.getToken(token)).thenReturn(token);
+                when(jwtUtilities.validateToken(token)).thenReturn(true);
+                when(passwordEncoder.matches(password, password)).thenReturn(true);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder, jwtUtilities);
                 BoardRequest request = new BoardRequest();
                 request.setPassword(password);
 
-                BoardResponse boardResponse = boardService.deleteBoard(id, request);
+                BoardResponse boardResponse = boardService.deleteBoard(token, id, request);
 
                 assertThat(boardResponse.getContent()).isEqualTo(content);
             }
@@ -295,15 +311,19 @@ class BoardServiceTest {
         @DisplayName("비정상 케이스")
         class FailCase {
             @Test
-            @DisplayName("삭제하려는 게시물이 존재하지 않는 경우")
+            @DisplayName("존재하지 않는 게시글에 접근하는 경우")
             void deleteBoardFail() {
                 when(boardRepository.findById(id)).thenThrow(new BoardException(BOARD_NOT_FOUND));
-                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder);
+                String token = "token";
+                when(jwtUtilities.getToken(token)).thenReturn(token);
+                when(jwtUtilities.validateToken(token)).thenReturn(true);
+
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder, jwtUtilities);
 
                 BoardRequest request = new BoardRequest();
                 request.setPassword(password);
 
-                Exception exception = assertThrows(BoardException.class, () -> boardService.deleteBoard(id, request));
+                Exception exception = assertThrows(BoardException.class, () -> boardService.deleteBoard(token, id, request));
 
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
             }
@@ -328,7 +348,7 @@ class BoardServiceTest {
             void findBoardListSuccess() {
                 when(boardRepository.findAll()).thenReturn(boardList);
 
-                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder);
+                BoardService boardService = new BoardServiceImpl(boardRepository, searchQueryRepository, passwordEncoder, jwtUtilities);
                 List<BoardResponse> response = boardService.findBoardList();
 
                 assertThat(response.size()).isEqualTo(2);

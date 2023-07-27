@@ -6,6 +6,7 @@ import com.nts.board.repository.BoardRepository;
 import com.nts.board.repository.SearchQueryRepository;
 import com.nts.board.request.BoardRequest;
 import com.nts.board.response.BoardResponse;
+import com.nts.board.security.JwtUtilities;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final SearchQueryRepository searchQueryRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtilities jwtUtilities;
 
     @Override
     public BoardResponse findBoard(long boardId) {
@@ -50,22 +52,28 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardResponse updateBoard(long boardId, BoardRequest request) {
+    public BoardResponse updateBoard(String header, long boardId, BoardRequest request) {
+        String token = jwtUtilities.getToken(header);
+        if(token == null || !jwtUtilities.validateToken(token)) throw new BoardException(BOARD_INVALID);
+
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         if(findBoard.isDeleted()) throw new BoardException(BOARD_DELETED);
         if(!passwordEncoder.matches(request.getPassword(), findBoard.getPassword()))
-            throw new BoardException(BOARD_FORBIDDEN);
+            throw new BoardException(BOARD_PASSWORD_FAIL);
         findBoard.update(request.getTitle(), request.getContent());
         return BoardResponse.from(findBoard);
     }
 
     @Override
     @Transactional
-    public BoardResponse deleteBoard(long boardId, BoardRequest request) {
+    public BoardResponse deleteBoard(String header, long boardId, BoardRequest request) {
+        String token = jwtUtilities.getToken(header);
+        if(token == null || !jwtUtilities.validateToken(token)) throw new BoardException(BOARD_INVALID);
+
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         if(findBoard.isDeleted()) throw new BoardException(BOARD_DELETED);
         if(!passwordEncoder.matches(request.getPassword(), findBoard.getPassword()))
-            throw new BoardException(BOARD_FORBIDDEN);
+            throw new BoardException(BOARD_PASSWORD_FAIL);
         findBoard.delete();
         return BoardResponse.from(findBoard);
     }
@@ -94,5 +102,11 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         board.increaseLike();
         return BoardResponse.from(board);
+    }
+
+    @Override
+    public String findBoardPassword(long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        return board.getPassword();
     }
 }

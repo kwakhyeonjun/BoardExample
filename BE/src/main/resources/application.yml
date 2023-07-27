@@ -15,3 +15,8 @@ server:
   port: 7777
   servlet:
       context-path: /api
+
+## JWT Config
+jwt:
+  secret: "secret"
+  expiration: 360000

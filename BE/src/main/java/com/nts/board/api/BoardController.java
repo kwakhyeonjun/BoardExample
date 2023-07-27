@@ -33,15 +33,15 @@ public class BoardController {
 
     // 게시물 수정
     @PutMapping("/board/{boardId}")
-    public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long boardId, @RequestBody BoardRequest request) {
-        BoardResponse body = boardService.updateBoard(boardId, request);
+    public ResponseEntity<BoardResponse> updateBoard(@RequestHeader("Authorization") String header, @PathVariable Long boardId, @RequestBody BoardRequest request) {
+        BoardResponse body = boardService.updateBoard(header, boardId, request);
         return ResponseEntity.ok().body(body);
     }
 
     // 게시물 삭제
     @DeleteMapping("/board/{boardId}")
-    public ResponseEntity<BoardResponse> deleteBoard(@PathVariable Long boardId, @RequestBody BoardRequest request) {
-        BoardResponse body = boardService.deleteBoard(boardId, request);
+    public ResponseEntity<BoardResponse> deleteBoard(@RequestHeader("Authorization") String header, @PathVariable Long boardId, @RequestBody BoardRequest request) {
+        BoardResponse body = boardService.deleteBoard(header, boardId, request);
         return ResponseEntity.ok().body(body);
     }
 

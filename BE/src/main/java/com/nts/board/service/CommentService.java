@@ -8,5 +8,6 @@ import java.util.List;
 public interface CommentService {
     CommentResponse createComment(CommentRequest request);
     List<CommentResponse> getCommentList(long boardId);
-    CommentResponse deleteComment(long commentId, CommentRequest request);
+    public CommentResponse deleteComment(String header, long commentId, CommentRequest request);
+    String findCommentPassword(Long commentId);
 }
