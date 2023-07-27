@@ -43,7 +43,6 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentResponse> getCommentList(long boardId) {
         List<Comment> commentList = commentRepository.findByBoard_Id(boardId);
         return commentList.stream()
-                .filter(comment -> !comment.isDeleted())
                 .map(CommentResponse::from)
                 .collect(Collectors.toList());
     }
