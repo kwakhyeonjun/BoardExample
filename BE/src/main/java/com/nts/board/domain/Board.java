@@ -50,4 +50,8 @@ public class Board extends BaseTimeEntity {
     public void delete() {
         this.deleted = true;
     }
+
+    public void increaseLike() {
+        this.likeCount++;
+    }
 }

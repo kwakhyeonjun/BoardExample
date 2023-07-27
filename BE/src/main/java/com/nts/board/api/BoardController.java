@@ -71,4 +71,10 @@ public class BoardController {
         List<BoardResponse> body = boardService.searchBoardList(title, content, writer, hashtag);
         return ResponseEntity.ok().body(body);
     }
+
+    @GetMapping("/board/like/{boardId}")
+    public ResponseEntity<BoardResponse> likeBoard(@PathVariable Long boardId) {
+        BoardResponse body = boardService.likeBoard(boardId);
+        return ResponseEntity.ok().body(body);
+    }
 }

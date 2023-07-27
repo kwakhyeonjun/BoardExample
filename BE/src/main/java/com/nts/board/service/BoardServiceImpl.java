@@ -84,4 +84,11 @@ public class BoardServiceImpl implements BoardService {
                 .map(BoardResponse::from)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public BoardResponse likeBoard(long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        board.increaseLike();
+        return BoardResponse.from(board);
+    }
 }
