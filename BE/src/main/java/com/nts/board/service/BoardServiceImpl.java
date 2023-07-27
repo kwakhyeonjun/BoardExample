@@ -28,6 +28,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardResponse findBoard(long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        board.increaseViewCount();
         return BoardResponse.from(board);
     }
 
