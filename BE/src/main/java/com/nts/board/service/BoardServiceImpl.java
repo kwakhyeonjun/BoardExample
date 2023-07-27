@@ -34,6 +34,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardResponse saveBoard(BoardRequest request) {
         Board board = Board.builder()
                 .title(request.getTitle())
@@ -48,6 +49,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardResponse updateBoard(long boardId, BoardRequest request) {
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         if(findBoard.isDeleted()) throw new BoardException(BOARD_DELETED);
@@ -58,6 +60,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardResponse deleteBoard(long boardId, BoardRequest request) {
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         if(findBoard.isDeleted()) throw new BoardException(BOARD_DELETED);
@@ -86,6 +89,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardResponse likeBoard(long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         board.increaseLike();
