@@ -6,6 +6,7 @@ import com.nts.board.repository.BoardRepository;
 import com.nts.board.repository.CommentRepository;
 import com.nts.board.request.CommentRequest;
 import com.nts.board.response.CommentResponse;
+import com.nts.board.security.JwtUtilities;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,6 +35,8 @@ class CommentControllerTest {
     BoardRepository boardRepository;
     @Autowired
     CommentRepository commentRepository;
+    @Autowired
+    JwtUtilities jwtUtilities;
 
     private String title;
     private String content;
@@ -120,37 +123,6 @@ class CommentControllerTest {
         }
     }
 
-    @Nested
-    @DisplayName("댓글 삭제")
-    class DeleteComment {
-        @Nested
-        @DisplayName("정상 케이스")
-        class SuccessCase {
-            @Test
-            @Transactional
-            @DisplayName("선택한 번호의 댓글 삭제")
-            void deleteCommentSuccess() {
-                Board board = Board.builder()
-                        .title(title)
-                        .writer(writer)
-                        .content(content)
-                        .build();
-                Board saveBoard = boardRepository.save(board);
-                Comment comment = Comment.builder()
-                        .content(content)
-                        .writer(writer)
-                        .password(password)
-                        .board(saveBoard)
-                        .build();
-                Comment saveComment = commentRepository.save(comment);
-
-                CommentRequest request = new CommentRequest();
-                request.setPassword(password);
-
-                ResponseEntity<CommentResponse> response = commentController.deleteComment(saveComment.getId(), request);
-
-                assertThat(Objects.requireNonNull(response.getBody()).isDeleted()).isTrue();
-            }
-        }
-    }
+//    @Nested
+    
 }

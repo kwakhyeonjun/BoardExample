@@ -5,6 +5,7 @@ import com.nts.board.domain.Comment;
 import com.nts.board.repository.BoardRepository;
 import com.nts.board.repository.CommentRepository;
 import com.nts.board.response.CountResponse;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,7 @@ class CountControllerTest {
     CommentRepository commentRepository;
 
     @Test
+    @Transactional
     @DisplayName("검색")
     void count() {
         String title1 = "제목1";
