@@ -19,7 +19,7 @@ public class BoardController {
 
     // 게시글 상세
     @GetMapping("/board/{boardId}")
-    public ResponseEntity<BoardResponse> getBoard(@PathVariable long boardId) {
+    public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
         BoardResponse body = boardService.findBoard(boardId);
         return ResponseEntity.ok().body(body);
     }
@@ -33,14 +33,14 @@ public class BoardController {
 
     // 게시물 수정
     @PutMapping("/board/{boardId}")
-    public ResponseEntity<BoardResponse> updateBoard(@PathVariable long boardId, @RequestBody BoardRequest request) {
+    public ResponseEntity<BoardResponse> updateBoard(@PathVariable Long boardId, @RequestBody BoardRequest request) {
         BoardResponse body = boardService.updateBoard(boardId, request);
         return ResponseEntity.ok().body(body);
     }
 
     // 게시물 삭제
     @DeleteMapping("/board/{boardId}")
-    public ResponseEntity<BoardResponse> deleteBoard(@PathVariable long boardId, @RequestBody BoardRequest request) {
+    public ResponseEntity<BoardResponse> deleteBoard(@PathVariable Long boardId, @RequestBody BoardRequest request) {
         BoardResponse body = boardService.deleteBoard(boardId, request);
         return ResponseEntity.ok().body(body);
     }

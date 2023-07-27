@@ -10,25 +10,25 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController("/comment")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/comment")
+    @PostMapping
     public ResponseEntity<CommentResponse> createComment(@RequestBody CommentRequest request) {
         CommentResponse body = commentService.createComment(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
-    @GetMapping("/comment/{boardId}")
+    @GetMapping("/{boardId}")
     public ResponseEntity<List<CommentResponse>> getCommentList(@PathVariable Long boardId) {
         List<CommentResponse> body = commentService.getCommentList(boardId);
         return ResponseEntity.ok().body(body);
     }
 
-    @DeleteMapping("/comment/{commentId}")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<CommentResponse> deleteComment(@PathVariable Long commentId, @RequestBody CommentRequest request) {
         CommentResponse body = commentService.deleteComment(commentId, request);
         return ResponseEntity.ok().body(body);
