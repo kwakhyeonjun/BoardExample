@@ -11,6 +11,7 @@ import com.nts.board.response.CommentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class CommentServiceImpl implements CommentService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public CommentResponse createComment(CommentRequest request) {
         Board board = boardRepository.findById(request.getBoardId()).orElseThrow(() -> new BoardException(BoardException.BOARD_NOT_FOUND));
         Comment comment = Comment.builder()
@@ -43,12 +45,12 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentResponse> getCommentList(long boardId) {
         List<Comment> commentList = commentRepository.findByBoard_Id(boardId);
         return commentList.stream()
-                .filter(comment -> !comment.isDeleted())
                 .map(CommentResponse::from)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public CommentResponse deleteComment(long commentId, CommentRequest request) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(COMMENT_NOT_FOUND));
         if(passwordEncoder.matches(comment.getPassword(), request.getPassword()))

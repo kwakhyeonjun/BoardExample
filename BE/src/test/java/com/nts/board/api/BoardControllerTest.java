@@ -110,7 +110,7 @@ class BoardControllerTest {
             @DisplayName("존재하지 않는 게시물인 경우")
             void getBoardFail() {
                 Exception exception = assertThrows(BoardException.class, () -> {
-                    boardController.getBoard(2);
+                    boardController.getBoard(2L);
                 });
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
             }
@@ -176,7 +176,7 @@ class BoardControllerTest {
                 request.setContent(newContent);
 
                 Exception exception = assertThrows(BoardException.class, () -> {
-                    boardController.updateBoard(2, request);
+                    boardController.updateBoard(2L, request);
                 });
 
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());

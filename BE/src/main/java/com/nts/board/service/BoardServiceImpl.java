@@ -28,10 +28,13 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardResponse findBoard(long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        if(board.isDeleted()) throw new BoardException(BOARD_DELETED);
+        board.increaseViewCount();
         return BoardResponse.from(board);
     }
 
     @Override
+    @Transactional
     public BoardResponse saveBoard(BoardRequest request) {
         Board board = Board.builder()
                 .title(request.getTitle())
@@ -46,8 +49,10 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardResponse updateBoard(long boardId, BoardRequest request) {
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        if(findBoard.isDeleted()) throw new BoardException(BOARD_DELETED);
         if(!passwordEncoder.matches(request.getPassword(), findBoard.getPassword()))
             throw new BoardException(BOARD_FORBIDDEN);
         findBoard.update(request.getTitle(), request.getContent());
@@ -55,11 +60,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public BoardResponse deleteBoard(long boardId, BoardRequest request) {
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        if(findBoard.isDeleted()) throw new BoardException(BOARD_DELETED);
         if(!passwordEncoder.matches(request.getPassword(), findBoard.getPassword()))
             throw new BoardException(BOARD_FORBIDDEN);
-        boardRepository.deleteById(boardId);
+        findBoard.delete();
         return BoardResponse.from(findBoard);
     }
 
@@ -67,6 +74,7 @@ public class BoardServiceImpl implements BoardService {
     public List<BoardResponse> findBoardList() {
         List<Board> boardList = boardRepository.findAll();
         return boardList.stream()
+                .filter(board -> !board.isDeleted())
                 .map(BoardResponse::from)
                 .collect(Collectors.toList());
     }
@@ -78,5 +86,13 @@ public class BoardServiceImpl implements BoardService {
                 .filter(board -> !board.isDeleted())
                 .map(BoardResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public BoardResponse likeBoard(long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
+        board.increaseLike();
+        return BoardResponse.from(board);
     }
 }
