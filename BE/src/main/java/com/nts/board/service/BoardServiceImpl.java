@@ -60,7 +60,7 @@ public class BoardServiceImpl implements BoardService {
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         if(!passwordEncoder.matches(request.getPassword(), findBoard.getPassword()))
             throw new BoardException(BOARD_FORBIDDEN);
-        boardRepository.deleteById(boardId);
+        findBoard.delete();
         return BoardResponse.from(findBoard);
     }
 

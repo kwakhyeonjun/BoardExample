@@ -46,4 +46,8 @@ public class Board extends BaseTimeEntity {
     public void increaseViewCount() {
         this.viewCount++;
     }
+
+    public void delete() {
+        this.deleted = true;
+    }
 }
