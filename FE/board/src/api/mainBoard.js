@@ -1,6 +1,5 @@
 import axios from 'axios'
-
-const API_BASE_URL = 'http://localhost:7777/api'
+import { API_BASE_URL } from '@/config'
 
 // 전체 게시물 가져오기
 export async function fetchBoardList () {
@@ -34,7 +33,6 @@ export async function searchBoards (searchOption, searchKeyword) {
         q: searchKeyword
       }
     })
-    console.log('게시물 검색 결과: ', response.data)
     return response.data
   } catch (error) {
     console.error('올바르지 않은 검색입니다.', error)
