@@ -1,15 +1,26 @@
 import Vue from 'vue'
-import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import VueRouter from 'vue-router'
+import Main from '@/views/Main.vue'
+import CreateBoard from '@/views/CreateBoard.vue'
 
-Vue.use(Router)
+Vue.use(VueRouter)
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
-    }
-  ]
+const routes = [
+  {
+    path: '/',
+    name: 'Main',
+    component: Main
+  },
+  {
+    path: '/create',
+    name: 'CreateBoard',
+    component: CreateBoard
+  }
+]
+
+const router = new VueRouter({
+  mode: 'history',
+  routes
 })
+
+export default router
