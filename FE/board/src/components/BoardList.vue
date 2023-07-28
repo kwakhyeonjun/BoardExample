@@ -27,6 +27,7 @@
 
 <script>
 export default {
+  name: 'BoardList',
   props: {
     boardList: Array
   }

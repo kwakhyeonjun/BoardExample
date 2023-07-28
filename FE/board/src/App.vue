@@ -2,6 +2,7 @@
   <div id="app">
     <div class="header">
       <h1 class="board-title">NTS Board</h1>
+      <CountBar :boardCount="boardCount" :commentCount="commentCount" />
     </div>
     <BoardList :boardList="boardList" />
   </div>
@@ -9,19 +10,23 @@
 
 <script>
 import BoardList from './components/BoardList.vue'
-import { fetchBoardList } from './api/api.js'
+import CountBar from './components/CountBar.vue'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   components: {
-    BoardList
+    BoardList,
+    CountBar
   },
-  data () {
-    return {
-      boardList: []
-    }
+  computed: {
+    ...mapState(['boardList', 'boardCount', 'commentCount'])
+  },
+  methods: {
+    ...mapActions(['fetchBoardList', 'fetchBoardAndCommentCount'])
   },
   async created () {
-    this.boardList = await fetchBoardList()
+    await this.fetchBoardList()
+    await this.fetchBoardAndCommentCount()
   }
 }
 </script>
