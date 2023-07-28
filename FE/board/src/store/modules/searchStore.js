@@ -6,7 +6,7 @@ Vue.use(Vuex)
 
 const searchStore = {
   state: {
-    searchOption: 'title', // 검색 대상을 저장할 상태 (기본값: '제목')
+    searchOption: 'TITLE', // 검색 대상을 저장할 상태 (기본값: '제목')
     searchKeyword: '', // 검색어를 저장할 상태
     searchResult: [] // 검색 결과를 저장할 상태
   },
@@ -17,8 +17,8 @@ const searchStore = {
     SET_SEARCH_KEYWORD (state, searchKeyword) {
       state.searchKeyword = searchKeyword
     },
-    SET_SEARCH_RESULT (state, searchKeyword) {
-      state.searchKeyword = searchKeyword
+    SET_SEARCH_RESULT (state, searchResult) {
+      state.searchResult = searchResult
     }
   },
   actions: {
@@ -28,7 +28,7 @@ const searchStore = {
         const searchKeyword = state.searchKeyword
 
         if (!searchKeyword.trim()) {
-          commit('setSearchResult', [])
+          commit('SET_SEARCH_RESULT', [])
           return
         }
 
