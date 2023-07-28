@@ -14,7 +14,9 @@
       <tbody>
         <template v-if="boardList.length > 0">
           <tr v-for="board in boardList" :key="board.id">
-            <td>{{ board.title }}</td>
+            <router-link :to="`/board/${board.id}`">
+              <td>{{ board.title }}</td>
+            </router-link>
             <td>{{ board.writer }}</td>
             <td>{{ board.createdDate }}</td>
             <td>{{ board.commentCount }}</td>
