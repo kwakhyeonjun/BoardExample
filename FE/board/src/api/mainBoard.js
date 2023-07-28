@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API_BASE_URL } from '@/config'
+import { API_BASE_URL } from '../config'
 
 // 전체 게시물 가져오기
 export async function fetchBoardList () {

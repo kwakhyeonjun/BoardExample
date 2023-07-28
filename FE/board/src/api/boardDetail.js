@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API_BASE_URL } from '@/config'
+import { API_BASE_URL } from '../config'
 
 // 게시글 상세 정보를 가져오는 API 호출 함수
 export const fetchBoardDetail = async (boardId) => {
