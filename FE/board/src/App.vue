@@ -2,9 +2,9 @@
   <div id="app">
     <div class="header">
       <h1 class="board-title">NTS Board</h1>
-      <CountBar :boardCount="boardCount" :commentCount="commentCount" />
+      <CountBar />
     </div>
-    <BoardList :boardList="boardList" />
+    <BoardList />
     <SearchBar @search="onSearch" />
   </div>
 </template>
@@ -13,7 +13,7 @@
 import BoardList from './components/BoardList.vue'
 import CountBar from './components/CountBar.vue'
 import SearchBar from './components/SearchBar.vue'
-import { mapState, mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -22,13 +22,16 @@ export default {
     SearchBar
   },
   computed: {
-    ...mapState(['boardList', 'boardCount', 'commentCount'])
+    ...mapGetters(['getBoardList']),
+    boardList () {
+      return this.getBoardList
+    }
   },
   methods: {
     ...mapActions(['fetchBoardList', 'fetchBoardAndCommentCount']),
-    onSearch (searchKeyword) {
+    async onSearch (searchKeyword) {
       this.$store.commit('SET_SEARCH_KEYWORD', searchKeyword)
-      this.$store.dispatch('searchBoards')
+      await this.$store.dispatch('searchBoards')
     }
   },
   async created () {

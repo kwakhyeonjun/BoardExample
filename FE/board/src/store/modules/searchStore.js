@@ -19,6 +19,12 @@ const searchStore = {
     },
     SET_SEARCH_RESULT (state, searchResult) {
       state.searchResult = searchResult
+    },
+    SET_ORIGINAL_BOARD_LIST (state, boardList) {
+      state.originalBoardList = boardList
+    },
+    RESET_BOARD_LIST (state) {
+      state.boardList = state.originalBoardList
     }
   },
   actions: {
@@ -39,6 +45,9 @@ const searchStore = {
         commit('SET_SEARCH_RESULT', [])
       }
     }
+  },
+  getters: {
+    getSearchResult: state => state.searchResult
   }
 }
 

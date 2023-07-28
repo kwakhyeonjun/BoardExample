@@ -21,7 +21,7 @@ const mainStore = {
     async fetchBoardList ({ commit }) {
       try {
         const response = await fetchBoardList()
-        commit('SET_BOARD_LIST', response.data)
+        commit('SET_BOARD_LIST', response)
       } catch (error) {
         console.error('게시글 목록을 불러오지 못했습니다:', error)
         commit('SET_BOARD_LIST', [])
@@ -40,6 +40,7 @@ const mainStore = {
     }
   },
   getters: {
+    getBoardList: state => state.boardList,
     getBoardCount: state => state.boardCount,
     getCommentCount: state => state.commentCount
   }
