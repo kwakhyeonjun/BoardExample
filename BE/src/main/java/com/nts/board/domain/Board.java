@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
+@ToString
 public class Board extends BaseTimeEntity {
 
     @Id
@@ -25,6 +26,8 @@ public class Board extends BaseTimeEntity {
     private int unlikeCount;
     private long viewCount;
     private boolean deleted;
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<Comment> commentList = new ArrayList<>();
     @Nullable
     private String hashtag;
 
