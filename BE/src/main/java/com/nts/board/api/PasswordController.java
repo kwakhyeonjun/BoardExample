@@ -28,7 +28,7 @@ public class PasswordController {
         String boardPassword = boardService.findBoardPassword(boardId);
         if(!passwordEncoder.matches(request.getPassword(), boardPassword)) throw new BoardException(BOARD_INVALID);
         String newToken = jwtUtilities.generateToken(request.getPassword());
-        return ResponseEntity.ok().body(newToken);
+        return ResponseEntity.ok().header("Authorization", newToken).body("ok");
     }
 
     @PostMapping("/password/comment/{commentId}")
@@ -36,6 +36,6 @@ public class PasswordController {
         String commentPassword = commentService.findCommentPassword(commentId);
         if(!passwordEncoder.matches(request.getPassword(), commentPassword)) throw new CommentException(COMMENT_INVALID);
         String newToken = jwtUtilities.generateToken(request.getPassword());
-        return ResponseEntity.ok().body(newToken);
+        return ResponseEntity.ok().header("Authorization", newToken).body("ok");
     }
 }
