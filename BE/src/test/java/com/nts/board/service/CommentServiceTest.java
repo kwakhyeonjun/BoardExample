@@ -189,7 +189,7 @@ public class CommentServiceTest {
                 CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository, passwordEncoder, jwtUtilities);
                 CommentRequest request = new CommentRequest();
                 request.setPassword(password);
-                CommentResponse response = commentService.deleteComment(token, id, request);
+                CommentResponse response = commentService.deleteComment(token, id);
 
                 assertThat(response.isDeleted()).isTrue();
             }
@@ -209,7 +209,7 @@ public class CommentServiceTest {
                 CommentService commentService = new CommentServiceImpl(commentRepository, boardRepository, passwordEncoder, jwtUtilities);
                 CommentRequest request = new CommentRequest();
                 request.setPassword(password);
-                Exception exception = assertThrows(CommentException.class, () -> commentService.deleteComment(token, id, request));
+                Exception exception = assertThrows(CommentException.class, () -> commentService.deleteComment(token, id));
 
                 assertThat(exception.getMessage()).isEqualTo(COMMENT_NOT_FOUND);
             }

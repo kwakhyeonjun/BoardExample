@@ -68,14 +68,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardResponse deleteBoard(String header, long boardId, BoardRequest request) {
+    public BoardResponse deleteBoard(String header, long boardId) {
         String token = jwtUtilities.getToken(header);
         if(token == null || !jwtUtilities.validateToken(token)) throw new BoardException(BOARD_INVALID);
 
         Board findBoard = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         if(findBoard.isDeleted()) throw new BoardException(BOARD_DELETED);
-        if(!passwordEncoder.matches(request.getPassword(), findBoard.getPassword()))
-            throw new BoardException(BOARD_PASSWORD_FAIL);
         findBoard.delete();
         return BoardResponse.from(findBoard);
     }
