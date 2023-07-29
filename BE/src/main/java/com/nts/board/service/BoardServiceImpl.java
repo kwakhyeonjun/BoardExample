@@ -1,6 +1,7 @@
 package com.nts.board.service;
 
 import com.nts.board.domain.Board;
+import com.nts.board.domain.defaults.BaseTimeEntity;
 import com.nts.board.exception.BoardException;
 import com.nts.board.repository.BoardRepository;
 import com.nts.board.repository.SearchQueryRepository;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,6 +85,7 @@ public class BoardServiceImpl implements BoardService {
         List<Board> boardList = boardRepository.findAll();
         return boardList.stream()
                 .filter(board -> !board.isDeleted())
+                .sorted((b1, b2) -> b2.getCreatedDate().compareTo(b1.getCreatedDate()))
                 .map(BoardResponse::from)
                 .collect(Collectors.toList());
     }
@@ -92,6 +95,7 @@ public class BoardServiceImpl implements BoardService {
         List<Board> boardList = searchQueryRepository.findBoardContains(title, content, writer, hashtag);
         return boardList.stream()
                 .filter(board -> !board.isDeleted())
+                .sorted((b1, b2) -> b2.getCreatedDate().compareTo(b1.getCreatedDate()))
                 .map(BoardResponse::from)
                 .collect(Collectors.toList());
     }
