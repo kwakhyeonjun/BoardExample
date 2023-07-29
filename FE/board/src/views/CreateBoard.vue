@@ -92,6 +92,7 @@ export default {
       try {
         const response = await createBoard(newBoard)
         console.log('게시글 작성 완료!', response)
+        this.$router.push(`/board/${response.id}`)
       } catch (error) {
         console.error('게시글 작성 실패:', error)
       }
