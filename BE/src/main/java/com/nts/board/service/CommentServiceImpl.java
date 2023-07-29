@@ -47,6 +47,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentResponse> getCommentList(long boardId) {
         List<Comment> commentList = commentRepository.findByBoard_Id(boardId);
         return commentList.stream()
+                .sorted((c1, c2) -> c2.getCreatedDate().compareTo(c1.getCreatedDate()))
                 .map(CommentResponse::from)
                 .collect(Collectors.toList());
     }

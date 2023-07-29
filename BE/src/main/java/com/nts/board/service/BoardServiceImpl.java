@@ -1,6 +1,7 @@
 package com.nts.board.service;
 
 import com.nts.board.domain.Board;
+import com.nts.board.domain.defaults.BaseTimeEntity;
 import com.nts.board.exception.BoardException;
 import com.nts.board.repository.BoardRepository;
 import com.nts.board.repository.SearchQueryRepository;
@@ -28,6 +29,7 @@ public class BoardServiceImpl implements BoardService {
     private final JwtUtilities jwtUtilities;
 
     @Override
+    @Transactional
     public BoardResponse findBoard(long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         if(board.isDeleted()) throw new BoardException(BOARD_DELETED);
@@ -83,6 +85,7 @@ public class BoardServiceImpl implements BoardService {
         List<Board> boardList = boardRepository.findAll();
         return boardList.stream()
                 .filter(board -> !board.isDeleted())
+                .sorted((b1, b2) -> b2.getCreatedDate().compareTo(b1.getCreatedDate()))
                 .map(BoardResponse::from)
                 .collect(Collectors.toList());
     }
@@ -92,6 +95,7 @@ public class BoardServiceImpl implements BoardService {
         List<Board> boardList = searchQueryRepository.findBoardContains(title, content, writer, hashtag);
         return boardList.stream()
                 .filter(board -> !board.isDeleted())
+                .sorted((b1, b2) -> b2.getCreatedDate().compareTo(b1.getCreatedDate()))
                 .map(BoardResponse::from)
                 .collect(Collectors.toList());
     }
