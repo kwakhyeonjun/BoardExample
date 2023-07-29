@@ -83,7 +83,6 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public List<BoardResponse> findBoardList() {
         List<Board> boardList = boardRepository.findAll();
-        System.out.println("board = " + boardList.get(0));
         return boardList.stream()
                 .filter(board -> !board.isDeleted())
                 .sorted((b1, b2) -> b2.getCreatedDate().compareTo(b1.getCreatedDate()))
