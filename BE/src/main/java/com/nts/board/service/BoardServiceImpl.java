@@ -105,10 +105,4 @@ public class BoardServiceImpl implements BoardService {
         board.increaseLike();
         return BoardResponse.from(board);
     }
-
-    @Override
-    public String findBoardPassword(long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
-        return board.getPassword();
-    }
 }

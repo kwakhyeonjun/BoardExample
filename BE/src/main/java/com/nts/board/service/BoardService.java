@@ -14,5 +14,4 @@ public interface BoardService {
     List<BoardResponse> findBoardList();
     List<BoardResponse> searchBoardList(String title, String content, String writer, String hashtag);
     BoardResponse likeBoard(long boardId);
-    String findBoardPassword(long boardId);
 }

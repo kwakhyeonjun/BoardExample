@@ -62,10 +62,4 @@ public class CommentServiceImpl implements CommentService {
         comment.delete();
         return CommentResponse.from(comment);
     }
-
-    @Override
-    public String findCommentPassword(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(COMMENT_NOT_FOUND));
-        return comment.getPassword();
-    }
 }

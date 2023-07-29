@@ -9,5 +9,4 @@ public interface CommentService {
     CommentResponse createComment(CommentRequest request);
     List<CommentResponse> getCommentList(long boardId);
     public CommentResponse deleteComment(String header, long commentId);
-    String findCommentPassword(Long commentId);
 }
