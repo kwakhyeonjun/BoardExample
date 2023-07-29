@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +29,7 @@ public class BoardServiceImpl implements BoardService {
     private final JwtUtilities jwtUtilities;
 
     @Override
+    @Transactional
     public BoardResponse findBoard(long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(BOARD_NOT_FOUND));
         if(board.isDeleted()) throw new BoardException(BOARD_DELETED);
