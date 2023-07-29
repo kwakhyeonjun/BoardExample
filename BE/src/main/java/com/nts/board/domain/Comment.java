@@ -15,7 +15,7 @@ public class Comment extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_no")
+    @JoinColumn(name = "board_id")
     private Board board;
 
     String content;

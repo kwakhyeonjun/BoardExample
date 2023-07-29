@@ -21,6 +21,7 @@ public class BoardResponse {
     LocalDateTime createdDate;
     int likeCount;
     long viewCount;
+    long commentCount;
     List<String> hashtagList;
 
     public static BoardResponse from(Board board) {
@@ -32,6 +33,7 @@ public class BoardResponse {
         boardResponse.setCreatedDate(board.getCreatedDate());
         boardResponse.setLikeCount(board.getLikeCount());
         boardResponse.setViewCount(board.getViewCount());
+        boardResponse.commentCount = board.getCommentList().size();
 
         boardResponse.hashtagList = new ArrayList<>();
         if(board.getHashtag() != null)
