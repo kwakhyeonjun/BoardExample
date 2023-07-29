@@ -22,7 +22,7 @@ const detailStore = {
       state.boardDetail.likeCount++
     },
     ADD_COMMENT (state, newComment) {
-      state.commentList.push(newComment)
+      state.commentList.unshift(newComment)
     }
   },
   actions: {
