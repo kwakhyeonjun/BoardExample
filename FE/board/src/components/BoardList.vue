@@ -16,6 +16,7 @@
           <tr v-for="board in boardList" :key="board.id">
             <router-link :to="`/board/${board.id}`">
               <td>{{ board.title }}</td>
+              <span v-if="isNewPost(board)">  [New]</span>
             </router-link>
             <td>{{ board.writer }}</td>
             <td>{{ board.createdDate }}</td>
@@ -46,6 +47,15 @@ export default {
     boardList () {
       if (this.getSearchResult.length > 0) return this.getSearchResult
       return this.getBoardList
+    }
+  },
+  methods: {
+    isNewPost (board) {
+      const currentDate = new Date()
+      const postDate = new Date(board.createdDate)
+      const timeDifference = currentDate.getTime() - postDate.getTime()
+      const threeDaysInMillis = 3 * 24 * 60 * 60 * 1000
+      return timeDifference < threeDaysInMillis
     }
   }
 }
