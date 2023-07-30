@@ -1,30 +1,24 @@
 <template>
   <div class="create-board">
-    <h1>게시글 작성</h1>
+    <h2>게시글 작성</h2>
     <form @submit.prevent="submitBoard">
-      <div>
+      <div class="form-field">
         <label for="title">제목:</label>
         <input v-model="title" type="text" id="title" required />
       </div>
-      <div>
+      <div class="form-field">
         <label for="writer">작성자:</label>
         <input v-model="writer" type="text" id="writer" required />
       </div>
-      <div class="form-group">
+      <div class="form-field">
         <label for="password">비밀번호</label>
-        <input
-          v-model="password"
-          type="password"
-          id="password"
-          name="password"
-          required
-        />
+        <input v-model="password" type="password" id="password" name="password" required />
       </div>
-      <div>
+      <div class="form-field">
         <label for="content">내용:</label>
         <textarea v-model="content" id="content" required></textarea>
       </div>
-      <div>
+      <div class="form-field">
         <label for="hashtagList">해시태그 (최대 5개):</label>
         <input
           v-model="tagInput"
@@ -39,7 +33,7 @@
         <li v-for="tag in hashtagList" :key="tag">{{ tag }}</li> <!-- 해시태그 리스트 -->
       </ul>
       <div v-if="hashtagList.length > 5" class="error">해시태그는 5개까지 등록할 수 있습니다.</div>
-      <div>
+      <div class="form-field">
         <button type="submit">작성 완료</button>
       </div>
     </form>
@@ -100,3 +94,73 @@ export default {
   }
 }
 </script>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.create-board {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.create-board h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.form-field {
+  margin-bottom: 20px;
+}
+
+.form-field label {
+  display: block;
+  font-weight: bold;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form-field textarea {
+  height: 150px;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul li {
+  margin-bottom: 5px;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.form-field button {
+  background-color: #03c75a;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.form-field button:hover {
+  background-color: #048c40;
+}
+</style>
