@@ -24,3 +24,27 @@ export default {
   }
 }
 </script>
+
+<style>
+.count-bar {
+  background-color: #03c75a;
+  padding: 10px;
+  color: white;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.count-item {
+  display: flex;
+  align-items: center;
+}
+
+.count-label {
+  margin-right: 3px;
+}
+
+.count-value {
+  font-weight: bold;
+  margin-right: 10px;
+}
+</style>

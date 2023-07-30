@@ -244,7 +244,7 @@ class BoardControllerTest {
                 request.setPassword(password);
                 String wrongToken = jwtUtilities.generateToken(password);
 
-                Exception exception = assertThrows(BoardException.class, () -> boardController.deleteBoard(wrongToken, id, request));
+                Exception exception = assertThrows(BoardException.class, () -> boardController.deleteBoard(wrongToken, id));
 
                 assertThat(BOARD_INVALID).isEqualTo(exception.getMessage());
             }

@@ -301,7 +301,7 @@ class BoardServiceTest {
                 BoardRequest request = new BoardRequest();
                 request.setPassword(password);
 
-                BoardResponse boardResponse = boardService.deleteBoard(token, id, request);
+                BoardResponse boardResponse = boardService.deleteBoard(token, id);
 
                 assertThat(boardResponse.getContent()).isEqualTo(content);
             }
@@ -323,7 +323,7 @@ class BoardServiceTest {
                 BoardRequest request = new BoardRequest();
                 request.setPassword(password);
 
-                Exception exception = assertThrows(BoardException.class, () -> boardService.deleteBoard(token, id, request));
+                Exception exception = assertThrows(BoardException.class, () -> boardService.deleteBoard(token, id));
 
                 assertThat(BOARD_NOT_FOUND).isEqualTo(exception.getMessage());
             }

@@ -40,8 +40,8 @@ public class BoardController {
 
     // 게시물 삭제
     @DeleteMapping("/board/{boardId}")
-    public ResponseEntity<BoardResponse> deleteBoard(@RequestHeader("Authorization") String header, @PathVariable Long boardId, @RequestBody BoardRequest request) {
-        BoardResponse body = boardService.deleteBoard(header, boardId, request);
+    public ResponseEntity<BoardResponse> deleteBoard(@RequestHeader("Authorization") String header, @PathVariable Long boardId) {
+        BoardResponse body = boardService.deleteBoard(header, boardId);
         return ResponseEntity.ok().body(body);
     }
 
