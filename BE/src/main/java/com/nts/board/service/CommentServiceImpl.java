@@ -54,20 +54,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentResponse deleteComment(String header, long commentId, CommentRequest request) {
+    public CommentResponse deleteComment(String header, long commentId) {
         String token = jwtUtilities.getToken(header);
         if(token == null || !jwtUtilities.validateToken(token)) throw new BoardException(BOARD_INVALID);
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(COMMENT_NOT_FOUND));
-        if(!passwordEncoder.matches(comment.getPassword(), request.getPassword()))
-            throw new CommentException(COMMENT_PASSWORD_FAIL);
         comment.delete();
         return CommentResponse.from(comment);
-    }
-
-    @Override
-    public String findCommentPassword(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentException(COMMENT_NOT_FOUND));
-        return comment.getPassword();
     }
 }

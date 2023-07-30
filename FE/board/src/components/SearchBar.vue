@@ -45,3 +45,17 @@ export default {
   }
 }
 </script>
+
+<style>
+.search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-option,
+.search-input,
+button {
+  margin-right: 10px;
+}
+</style>
